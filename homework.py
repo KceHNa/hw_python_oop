@@ -135,8 +135,8 @@ def read_package(training_type: str, data: list) -> Training:
     }
     if training_type not in code_training:
         print(
-              f'Тип тренировки "{training_type}" '
-              f'не найден в {type(code_training)}'
+            f'Тип тренировки "{training_type}" '
+            f'не найден в {type(code_training)}'
         )
         quit()
     else:
