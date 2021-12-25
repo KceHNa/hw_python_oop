@@ -67,7 +67,8 @@ class Running(Training):
     def get_spent_calories(self) -> float:
         """Подсчет калорий."""
         calc_1 = self.K_RUN_1 * self.get_mean_speed() - self.K_RUN_2
-        return calc_1 * self.weight / self.M_IN_KM * (self.duration_h * self.H_IN_MIN)
+        calc_2 = calc_1 * self.weight / self.M_IN_KM
+        return calc_2 * (self.duration_h * self.H_IN_MIN)
 
 
 class SportsWalking(Training):
@@ -89,8 +90,9 @@ class SportsWalking(Training):
     def get_spent_calories(self) -> float:
         """Подсчет затраченных калорий."""
         calc_1 = self.get_mean_speed() ** 2 // self.height
-        calc_2 = self.K_WALK_1 * self.weight + calc_1 * self.K_WALK_2 * self.weight
-        return calc_2 * (self.duration_h * self.H_IN_MIN)
+        calc_2 = calc_1 * self.K_WALK_2 * self.weight
+        calc_3 = self.K_WALK_1 * self.weight + calc_2
+        return calc_3 * (self.duration_h * self.H_IN_MIN)
 
 
 class Swimming(Training):
@@ -120,7 +122,8 @@ class Swimming(Training):
 
     def get_spent_calories(self) -> float:
         """Подсчет затраченных калорий."""
-        return (self.get_mean_speed() + self.K_SWIM_1) * self.K_SWIM_2 * self.weight
+        calc = self.get_mean_speed() + self.K_SWIM_1
+        return calc * self.K_SWIM_2 * self.weight
 
 
 def read_package(training_type: str, data: list) -> Training:
@@ -131,7 +134,10 @@ def read_package(training_type: str, data: list) -> Training:
         'WLK': SportsWalking
     }
     if training_type not in code_training:
-        print(f'Тип тренировки "{training_type}" не найден в {type(code_training)}')
+        print(
+              f'Тип тренировки "{training_type}" '
+              f'не найден в {type(code_training)}'
+        )
         quit()
     else:
         return code_training[training_type](*data)
