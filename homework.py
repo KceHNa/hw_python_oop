@@ -49,11 +49,11 @@ class Training:
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
         raise NotImplementedError(
-            'Не удалось получить калории в ' % self.__class__.__name__)
+            f'Не удалось получить калории в {self.__class__.__name__}')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
-        class_name = type(self).__name__
+        class_name: str = type(self).__name__
         return InfoMessage(class_name, self.duration, self.get_distance(),
                            self.get_mean_speed(), self.get_spent_calories())
 
@@ -66,6 +66,8 @@ class Running(Training):
 
     def get_spent_calories(self) -> float:
         """Подсчет калорий."""
+        calc_1: float
+        calc_2: float
         calc_1 = self.K_RUN_1 * self.get_mean_speed() - self.K_RUN_2
         calc_2 = calc_1 * self.weight / self.M_IN_KM
         return calc_2 * (self.duration * self.H_IN_MIN)
@@ -89,6 +91,9 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Подсчет затраченных калорий."""
+        calc_1: float
+        calc_2: float
+        calc_3: float
         calc_1 = self.get_mean_speed() ** 2 // self.height
         calc_2 = calc_1 * self.K_WALK_2 * self.weight
         calc_3 = self.K_WALK_1 * self.weight + calc_2
@@ -117,36 +122,36 @@ class Swimming(Training):
 
     def get_mean_speed(self) -> float:
         """Переопределяет среднюю скорость движения."""
+        calc: float
         calc = self.length_pool * self.count_pool / self.M_IN_KM
         return calc / self.duration
 
     def get_spent_calories(self) -> float:
         """Подсчет затраченных калорий."""
+        calc: float
         calc = self.get_mean_speed() + self.K_SWIM_1
         return calc * self.K_SWIM_2 * self.weight
 
 
 def read_package(training_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    code_training = {
+    code_training: dict = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
     }
     if training_type not in code_training:
-        print(
+        raise ValueError(
             f'Тип тренировки "{training_type}" '
             f'не найден в {type(code_training)}'
         )
-        quit()
-    else:
-        return code_training[training_type](*data)
+    return code_training[training_type](*data)
 
 
 def main(training: Training) -> None:
     """Главная функция."""
     info: InfoMessage = training.show_training_info()
-    print(InfoMessage.get_message(info))
+    print(info.get_message())
 
 
 if __name__ == '__main__':
