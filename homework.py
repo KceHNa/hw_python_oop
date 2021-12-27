@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Dict, Type
 
 
 @dataclass
@@ -34,9 +35,9 @@ class Training:
                  duration: float,
                  weight: float
                  ) -> None:
-        self.action = action
-        self.duration = duration
-        self.weight = weight
+        self.action: int = action
+        self.duration: float = duration
+        self.weight: float = weight
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -66,11 +67,10 @@ class Running(Training):
 
     def get_spent_calories(self) -> float:
         """Подсчет калорий."""
-        calc_1: float
-        calc_2: float
-        calc_1 = self.K_RUN_1 * self.get_mean_speed() - self.K_RUN_2
-        calc_2 = calc_1 * self.weight / self.M_IN_KM
-        return calc_2 * (self.duration * self.H_IN_MIN)
+        calc_1: float = self.K_RUN_1 * self.get_mean_speed()
+        calc_2: float = calc_1 - self.K_RUN_2
+        calc_3: float = calc_2 * self.weight / self.M_IN_KM
+        return calc_3 * (self.duration * self.H_IN_MIN)
 
 
 class SportsWalking(Training):
@@ -87,16 +87,13 @@ class SportsWalking(Training):
                  height: int
                  ) -> None:
         super().__init__(action, duration, weight)
-        self.height = height
+        self.height: int = height
 
     def get_spent_calories(self) -> float:
         """Подсчет затраченных калорий."""
-        calc_1: float
-        calc_2: float
-        calc_3: float
-        calc_1 = self.get_mean_speed() ** 2 // self.height
-        calc_2 = calc_1 * self.K_WALK_2 * self.weight
-        calc_3 = self.K_WALK_1 * self.weight + calc_2
+        calc_1: float = self.get_mean_speed() ** 2 // self.height
+        calc_2: float = calc_1 * self.K_WALK_2 * self.weight
+        calc_3: float = self.K_WALK_1 * self.weight + calc_2
         return calc_3 * (self.duration * self.H_IN_MIN)
 
 
@@ -117,25 +114,23 @@ class Swimming(Training):
                  count_pool: int
                  ) -> None:
         super().__init__(action, duration, weight)
-        self.length_pool = length_pool
-        self.count_pool = count_pool
+        self.length_pool: int = length_pool
+        self.count_pool: int = count_pool
 
     def get_mean_speed(self) -> float:
         """Переопределяет среднюю скорость движения."""
-        calc: float
-        calc = self.length_pool * self.count_pool / self.M_IN_KM
+        calc: float = self.length_pool * self.count_pool / self.M_IN_KM
         return calc / self.duration
 
     def get_spent_calories(self) -> float:
         """Подсчет затраченных калорий."""
-        calc: float
-        calc = self.get_mean_speed() + self.K_SWIM_1
+        calc: float = self.get_mean_speed() + self.K_SWIM_1
         return calc * self.K_SWIM_2 * self.weight
 
 
 def read_package(training_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    code_training: dict = {
+    code_training: Dict[str, Type[Training]] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
